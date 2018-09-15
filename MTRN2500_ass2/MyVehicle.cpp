@@ -17,7 +17,7 @@ MyVehicle::MyVehicle()
 {
 	SetLocalmd();
 	Setremote();
-	SetLocal();
+
 }
 
 MyVehicle::MyVehicle(VehicleModel remote)
