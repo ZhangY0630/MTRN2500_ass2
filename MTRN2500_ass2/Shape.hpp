@@ -1,21 +1,7 @@
 
 #ifndef MTRN3500_SHAPE_H
 #define MTRN3500_SHAPE_H
-class Coordinate {
-public:
-	Coordinate() = default;
-	~Coordinate() = default;
-	Coordinate(double x, double y) :x(x), y(y),z(z) {}
-	double GetX() { return this->x; }
-	double GetY() { return this->y; }
-	double GetZ() { return this->z; }
-	void Set(double x, double y, double z) { this->x = x, this->y, this->z = z; }
 
-private:
-	double x;
-	double y;
-	double z;
-};
 // Abstract class
 class Shape {
 
