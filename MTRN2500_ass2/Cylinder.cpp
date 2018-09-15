@@ -10,13 +10,14 @@ Cylinder::Cylinder()
 	Cylinderlength=10;
 	rolling = 0;
 }
-
+/*
 Cylinder::Cylinder(double radius, double Cylinderlength)
 {
 	this->radius = radius;
 	this->Cylinderlength = Cylinderlength;
 	rolling = 0;
 }
+*/
 
 Cylinder::Cylinder(double radius, double Cylinderlength, float x, float y, float z, float red, float green, float blue, float rotation)
 {
@@ -40,10 +41,13 @@ void Cylinder::draw()
 	glPushMatrix();
 	positionInGL(); //steering inside
 	setColorInGL();
+
 	GLUquadric*bottomcircle = gluNewQuadric();
 	GLUquadric*CylinderWall = gluNewQuadric();
-	glTranslated(0, radius, -Cylinderlength/2);
-	glRotated(-rolling, 0, 0, 1); //for rolling
+	
+
+	glRotated(rolling, 0, 1, 0); //for rolling
+
 	gluDisk(bottomcircle, 0, radius, 5, 1);
 	glTranslated(0, 0, Cylinderlength);//  glTranslated(x,y,z), move x,y,z position
 	gluDisk(bottomcircle, 0, radius, 5, 1);

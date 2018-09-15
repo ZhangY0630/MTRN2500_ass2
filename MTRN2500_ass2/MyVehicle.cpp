@@ -4,13 +4,14 @@
 #include"TrianglePrism.h"
 #include"TrapezoidalPrism.h"
 #include "Cylinder.h"
-//system defined library <>
+ //system defined library <>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include"Shape.hpp"
 #include "Vehicle.hpp"
 #include "Messages.hpp"
+
 
 MyVehicle::MyVehicle()
 {
@@ -28,6 +29,50 @@ MyVehicle::MyVehicle(VehicleModel remote)
 
 MyVehicle::~MyVehicle()
 {
+	
+}
+
+VehicleModel MyVehicle::getLocalmd()
+{
+	return Localmd;
+}
+
+void MyVehicle::SetLocalmd()//upload to server
+{
+	
+	//upload cylinderA1 front right 
+	ShapeInit CylA1;
+	CylA1.type = CYLINDER;
+	CylA1.rgb[0] = 1;
+	CylA1.rgb[1] = 0.4;
+	CylA1.rgb[2] = 0;
+	CylA1.xyz[0] = 1.5;//from message
+	CylA1.xyz[1] = 0;
+	CylA1.xyz[2] = 1.1;
+	CylA1.params.cyl.radius = 0.4;//from messages
+	CylA1.params.cyl.depth = 0.3;
+	CylA1.params.cyl.isRolling = 1; //enable wheel rolling 1, disable wheel rolling 0
+	CylA1.params.cyl.isSteering = 1;//enable steering 1, disable 0
+	CylA1.rotation = 0;
+	Localmd.shapes.push_back(CylA1);
+	
+
+	
+	//upload rectangle,it is a package
+	ShapeInit Rectbody;
+	Rectbody.type = RECTANGULAR_PRISM;
+	Rectbody.rgb[0] = 0;
+	Rectbody.rgb[1] = 1;
+	Rectbody.rgb[2] = 0;
+	Rectbody.xyz[0] = 0;//from message
+	Rectbody.xyz[1] = 0.4;
+	Rectbody.xyz[2] = 0;
+	Rectbody.params.rect.xlen = 3;//from messages
+	Rectbody.params.rect.ylen = 1;
+	Rectbody.params.rect.zlen = 2;
+	Rectbody.rotation = 0;
+	Localmd.shapes.push_back(Rectbody);
+
 
 }
 
@@ -36,78 +81,43 @@ VehicleModel MyVehicle::getremote()
 	return remote;
 }
 
-void MyVehicle::Setremote()//download, 
+void MyVehicle::Setremote()//download from server
 {
 	Shape* shptr;
 	std::vector<ShapeInit>::iterator a = remote.shapes.begin();//defined a interator a pointing to vector ShapeInit
-	while (a != remote.shapes.end()) {
-		if (a->type == RECTANGULAR_PRISM) {
-			shptr = new RectanglePrism(a->params.rect.xlen, a->params.rect.ylen, a->params.rect.zlen, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation); //pointing to x, y, z in package
-			addShape(shptr);//add a drawing list 
-		}
-		else if (a->type == CYLINDER) {
-			shptr = new Cylinder(a->params.cyl.radius, a->params.cyl.depth, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
-			addShape(shptr);
-		}
-		else if (a->type == TRIANGULAR_PRISM) {
-			shptr = new TrianglePrism(a->params.tri.alen, a->params.tri.blen, a->params.tri.depth, a->params.tri.angle, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
-			addShape(shptr);
-		}
+		while (a != remote.shapes.end()) {
+			if (a->type == RECTANGULAR_PRISM) {
+				shptr = new RectanglePrism(a->params.rect.xlen, a->params.rect.ylen, a->params.rect.zlen, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation); //pointing to x, y, z in package
+				addShape(shptr);//add a drawing list 
+			}
+			else if (a-> type == CYLINDER) {
+				shptr = new Cylinder(a->params.cyl.radius, a->params.cyl.depth, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
+				addShape(shptr);
+			}
+			else if (a->type == TRIANGULAR_PRISM) {
+				shptr = new TrianglePrism(a->params.tri.alen, a->params.tri.blen, a->params.tri.depth, a->params.tri.angle, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
+				addShape(shptr);
+			}
 
-		else if (a->type == TRAPEZOIDAL_PRISM) {
-			shptr = new TrapezoidalPrism(a->params.trap.alen, a->params.trap.blen, a->params.trap.height, a->params.trap.depth, a->params.trap.aoff, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
-			addShape(shptr);
+			else if (a->type == TRAPEZOIDAL_PRISM) {
+				shptr = new TrapezoidalPrism (a->params.trap.alen, a->params.trap.blen, a->params.trap.height, a->params.trap.depth, a->params.trap.aoff, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
+				addShape(shptr);
+			}
+			a++;
 		}
-		a++;
-	}
 }
 
-void MyVehicle::SetLocal()
-{
-	Shape* shptr;
-	std::vector<ShapeInit>::iterator c = Localmd.shapes.begin();
-	while (c != Localmd.shapes.end()) {
-		if (c->type == RECTANGULAR_PRISM) {
-			shptr = new RectanglePrism(c->params.rect.xlen, c->params.rect.ylen, c->params.rect.zlen, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation); //pointing to x, y, z in package
-			addShape(shptr);//add a drawing list 
-		}
-		else if (c->type == CYLINDER) {
-			shptr = new Cylinder(c->params.cyl.radius, c->params.cyl.depth, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation);
-			addShape(shptr);
-		}
-		else if (c->type == TRIANGULAR_PRISM) {
-			shptr = new TrianglePrism(c->params.tri.alen, c->params.tri.blen, c->params.tri.depth, c->params.tri.angle, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation);
-			addShape(shptr);
-		}
-
-		else if (c->type == TRAPEZOIDAL_PRISM) {
-			shptr = new TrapezoidalPrism(c->params.trap.alen, c->params.trap.blen, c->params.trap.height, c->params.trap.depth, c->params.trap.aoff, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation);
-			addShape(shptr);
-		}
-		c++;
-	}
-}
 
 
 
 
 void MyVehicle::draw()
 {
-	std::vector<Shape*>::iterator b = shapes.begin();
-	Cylinder* allwheels = dynamic_cast<Cylinder*> (*b);
-	while (b != shapes.end()) {
+	
 		glPushMatrix();
-		positionInGL(); //if no this line, car cannot move
-		allwheels = dynamic_cast<Cylinder*>(*b);
-		if (allwheels != NULL && (allwheels->getX()) > 0) { //front wheels rotating
-			allwheels->setRotation(Vehicle::steering); //steering pass into Shape class
-		}
-		if (allwheels != NULL) { //back wheels rotating, (allwheels->getX()) < 0 restricting back wheels rotate
-			allwheels->setRolling(Vehicle::speed); //speed pass to cylinder class
-		}
-
-		(*b)->draw();
+		positionInGL(); 
+		
 		glPopMatrix();
-		b++;
+		
 	}
 }
