@@ -4,7 +4,7 @@
 #include"TrianglePrism.h"
 #include"TrapezoidalPrism.h"
 #include "Cylinder.h"
- //system defined library <>
+//system defined library <>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -17,7 +17,7 @@ MyVehicle::MyVehicle()
 {
 	SetLocalmd();
 	Setremote();
-
+	SetLocal();
 }
 
 MyVehicle::MyVehicle(VehicleModel remote)
@@ -29,7 +29,7 @@ MyVehicle::MyVehicle(VehicleModel remote)
 
 MyVehicle::~MyVehicle()
 {
-	
+
 }
 
 VehicleModel MyVehicle::getLocalmd()
@@ -39,7 +39,7 @@ VehicleModel MyVehicle::getLocalmd()
 
 void MyVehicle::SetLocalmd()//upload to server
 {
-	
+
 	//upload cylinderA1 front right 
 	ShapeInit CylA1;
 	CylA1.type = CYLINDER;
@@ -55,7 +55,7 @@ void MyVehicle::SetLocalmd()//upload to server
 	CylA1.params.cyl.isSteering = 1;//enable steering 1, disable 0
 	CylA1.rotation = 0;
 	Localmd.shapes.push_back(CylA1);
-	
+
 	//upload cylinderA2 front left
 	ShapeInit CylA2;
 	CylA2.type = CYLINDER;
@@ -103,7 +103,7 @@ void MyVehicle::SetLocalmd()//upload to server
 	CylA4.params.cyl.isSteering = 0;
 	CylA4.rotation = 0;
 	Localmd.shapes.push_back(CylA4);
-	
+
 	//upload rectangle,it is a package
 	ShapeInit Rectbody;
 	Rectbody.type = RECTANGULAR_PRISM;
@@ -162,26 +162,26 @@ void MyVehicle::Setremote()//download from server
 {
 	Shape* shptr;
 	std::vector<ShapeInit>::iterator a = remote.shapes.begin();//defined a interator a pointing to vector ShapeInit
-		while (a != remote.shapes.end()) {
-			if (a->type == RECTANGULAR_PRISM) {
-				shptr = new RectanglePrism(a->params.rect.xlen, a->params.rect.ylen, a->params.rect.zlen, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation); //pointing to x, y, z in package
-				addShape(shptr);//add a drawing list 
-			}
-			else if (a-> type == CYLINDER) {
-				shptr = new Cylinder(a->params.cyl.radius, a->params.cyl.depth, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
-				addShape(shptr);
-			}
-			else if (a->type == TRIANGULAR_PRISM) {
-				shptr = new TrianglePrism(a->params.tri.alen, a->params.tri.blen, a->params.tri.depth, a->params.tri.angle, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
-				addShape(shptr);
-			}
-
-			else if (a->type == TRAPEZOIDAL_PRISM) {
-				shptr = new TrapezoidalPrism (a->params.trap.alen, a->params.trap.blen, a->params.trap.height, a->params.trap.depth, a->params.trap.aoff, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
-				addShape(shptr);
-			}
-			a++;
+	while (a != remote.shapes.end()) {
+		if (a->type == RECTANGULAR_PRISM) {
+			shptr = new RectanglePrism(a->params.rect.xlen, a->params.rect.ylen, a->params.rect.zlen, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation); //pointing to x, y, z in package
+			addShape(shptr);//add a drawing list 
 		}
+		else if (a->type == CYLINDER) {
+			shptr = new Cylinder(a->params.cyl.radius, a->params.cyl.depth, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
+			addShape(shptr);
+		}
+		else if (a->type == TRIANGULAR_PRISM) {
+			shptr = new TrianglePrism(a->params.tri.alen, a->params.tri.blen, a->params.tri.depth, a->params.tri.angle, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
+			addShape(shptr);
+		}
+
+		else if (a->type == TRAPEZOIDAL_PRISM) {
+			shptr = new TrapezoidalPrism(a->params.trap.alen, a->params.trap.blen, a->params.trap.height, a->params.trap.depth, a->params.trap.aoff, a->xyz[0], a->xyz[1], a->xyz[2], a->rgb[0], a->rgb[1], a->rgb[2], a->rotation);
+			addShape(shptr);
+		}
+		a++;
+	}
 }
 
 void MyVehicle::SetLocal()//unpack from download
@@ -211,6 +211,8 @@ void MyVehicle::SetLocal()//unpack from download
 }
 
 
+
+
 void MyVehicle::draw()
 {
 	std::vector<Shape*>::iterator b = shapes.begin();
@@ -219,7 +221,7 @@ void MyVehicle::draw()
 		glPushMatrix();
 		positionInGL(); //if no this line, car cannot move
 		allwheels = dynamic_cast<Cylinder*>(*b);
-		if (allwheels != NULL && (allwheels->getX()) >0 ){ //front wheels rotating
+		if (allwheels != NULL && (allwheels->getX()) > 0) { //front wheels rotating
 			allwheels->setRotation(Vehicle::steering); //steering pass into Shape class
 		}
 		if (allwheels != NULL) { //back wheels rotating, (allwheels->getX()) < 0 restricting back wheels rotate
