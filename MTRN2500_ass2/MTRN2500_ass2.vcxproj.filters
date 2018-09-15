@@ -69,6 +69,12 @@
     <ClInclude Include="MyVehicle.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="XBoxController.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XInputWrapper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -126,6 +132,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MyVehicle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="XBoxController.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
