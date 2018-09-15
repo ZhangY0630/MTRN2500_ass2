@@ -184,8 +184,31 @@ void MyVehicle::Setremote()//download from server
 		}
 }
 
+void MyVehicle::SetLocal()//unpack from download
+{
+	Shape* shptr;
+	std::vector<ShapeInit>::iterator c = Localmd.shapes.begin();
+	while (c != Localmd.shapes.end()) {
+		if (c->type == RECTANGULAR_PRISM) {
+			shptr = new RectanglePrism(c->params.rect.xlen, c->params.rect.ylen, c->params.rect.zlen, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation); //pointing to x, y, z in package
+			addShape(shptr);//add a drawing list element
+		}
+		else if (c->type == CYLINDER) {
+			shptr = new Cylinder(c->params.cyl.radius, c->params.cyl.depth, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation);
+			addShape(shptr);
+		}
+		else if (c->type == TRIANGULAR_PRISM) {
+			shptr = new TrianglePrism(c->params.tri.alen, c->params.tri.blen, c->params.tri.depth, c->params.tri.angle, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation);
+			addShape(shptr);
+		}
 
-
+		else if (c->type == TRAPEZOIDAL_PRISM) {
+			shptr = new TrapezoidalPrism(c->params.trap.alen, c->params.trap.blen, c->params.trap.height, c->params.trap.depth, c->params.trap.aoff, c->xyz[0], c->xyz[1], c->xyz[2], c->rgb[0], c->rgb[1], c->rgb[2], c->rotation);
+			addShape(shptr);
+		}
+		c++;
+	}
+}
 
 
 void MyVehicle::draw()

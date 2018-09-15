@@ -15,7 +15,7 @@ public:
 	VehicleModel getremote();//download
 	void Setremote();
 
-
+	void SetLocal();//unpack localmd
 
 	void draw();
 
