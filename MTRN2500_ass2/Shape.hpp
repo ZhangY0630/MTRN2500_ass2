@@ -43,27 +43,6 @@ protected:
 
 };
 
-class Rectprism : public Shape
-{
-public:
-	void setrectprism(double base_, double height_, double length_);
-	virtual void draw();
-protected:
-	double base, height, length;
-
-};
-class Triprism : public Shape
-{
-public:
-	void setcoordiniate(Coordinate one, Coordinate two, Coordinate three);
-	void setheight(double height_);
-	virtual void draw();
-	
-protected:
-	Coordinate First_p, Second_p, Third_p;
-	double height;
-};
-
 
 
 #endif // for MTRN3500_SHAPE_H

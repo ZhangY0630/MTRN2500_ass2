@@ -54,6 +54,18 @@
     <ClInclude Include="Vehicle.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Cylinder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TrianglePrism.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TrapezoidalPrism.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RectanglePrism.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -96,6 +108,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Vehicle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Cylinder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TrapezoidalPrism.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TrianglePrism.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RectanglePrism.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

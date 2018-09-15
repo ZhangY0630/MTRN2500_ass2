@@ -131,24 +131,6 @@ int main(int argc, char ** argv) {
 
 	return 0;
 }
-void draw_rect_prism(double x, double y, double z, double rotation,double length,double base,double height) {
-	Rectprism instance;
-	instance.setPosition(x, y, z);
-	instance.setRotation(rotation);
-	instance.setrectprism(base,height,length);
-	instance.draw();
-}
-void draw_tri_prism(double x, double y, double z, double rotation, Coordinate one, Coordinate two, Coordinate three,double height) 
-{
-	Triprism instance;
-	/*instance.setPosition(x, y, z);
-	instance.setcoordiniate(one, two, three);
-	instance.setRotation(rotation);
-	instance.setheight(height);*/
-	instance.draw();
-
-
-}
 void drawGoals()
 {
 	for (int i = 0; i < goals.size(); ++i) {
@@ -211,18 +193,6 @@ void display() {
 
 	// draw HUD
 	HUD::Draw();
-
-	Coordinate one, two, three;
-	one.Set(3, 1, 3);
-	two.Set(-3, 2, 3);
-	three.Set(0, 3, 0);
-
-	//draw_rect_prism(0, 0, 0, 0, 10, 10, 10);
-
-	draw_tri_prism(0, 0, 0, 0, one,two,three,10);
-
-	
-
 
 
 	glutSwapBuffers();
