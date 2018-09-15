@@ -213,11 +213,21 @@ void MyVehicle::SetLocal()//unpack from download
 
 void MyVehicle::draw()
 {
-	
+	std::vector<Shape*>::iterator b = shapes.begin();
+	Cylinder* allwheels = dynamic_cast<Cylinder*> (*b);
+	while (b != shapes.end()) {
 		glPushMatrix();
-		positionInGL(); 
-		
+		positionInGL(); //if no this line, car cannot move
+		allwheels = dynamic_cast<Cylinder*>(*b);
+		if (allwheels != NULL ) { //front wheels rotating
+			allwheels->setRotation(Vehicle::steering); //steering pass into Shape class
+		}
+		if (allwheels != NULL) { //back wheels rotating, (allwheels->getX()) < 0 restricting back wheels rotate
+			allwheels->setRolling(Vehicle::speed); //speed pass to cylinder class
+		}
+
+		(*b)->draw();
 		glPopMatrix();
-		
+		b++;
 	}
 }

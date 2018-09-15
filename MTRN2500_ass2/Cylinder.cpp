@@ -46,7 +46,7 @@ void Cylinder::draw()
 	GLUquadric*CylinderWall = gluNewQuadric();
 	
 
-	glRotated(rolling, 0, 1, 0); //for rolling
+	glRotated(rolling, 1,0, 0); //for rolling
 
 	gluDisk(bottomcircle, 0, radius, 5, 1);
 	glTranslated(0, 0, Cylinderlength);//  glTranslated(x,y,z), move x,y,z position
