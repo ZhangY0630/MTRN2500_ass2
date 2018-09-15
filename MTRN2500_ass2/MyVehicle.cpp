@@ -219,7 +219,7 @@ void MyVehicle::draw()
 		glPushMatrix();
 		positionInGL(); //if no this line, car cannot move
 		allwheels = dynamic_cast<Cylinder*>(*b);
-		if (allwheels != NULL ) { //front wheels rotating
+		if (allwheels != NULL && (allwheels->getX()) >0 ){ //front wheels rotating
 			allwheels->setRotation(Vehicle::steering); //steering pass into Shape class
 		}
 		if (allwheels != NULL) { //back wheels rotating, (allwheels->getX()) < 0 restricting back wheels rotate
