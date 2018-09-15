@@ -33,7 +33,7 @@
 
 #include "Shape.hpp"
 #include "Vehicle.hpp"
-
+#include "MyVehicle.h"
 #include "RemoteDataManager.hpp"
 #include "Messages.hpp"
 #include "HUD.hpp"
@@ -343,7 +343,7 @@ void idle() {
 								VehicleModel vm = models[i];
 								
 								// uncomment the line below to create remote vehicles
-							 otherVehicles[vm.remoteID] = new MyVehicle();
+							 otherVehicles[vm.remoteID] = new MyVehicle(vm);
 
 								//
 								// more student code goes here
