@@ -7,23 +7,23 @@
 #include <map>
 
 #ifdef __APPLE__
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <GLUT/glut.h>
-	#include <unistd.h>
-	#include <sys/time.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#include <unistd.h>
+#include <sys/time.h>
 #elif defined(WIN32)
-	#include <Windows.h>
-	#include <tchar.h>
-	#include <GL/gl.h>
-	#include <GL/glu.h>
-	#include <GL/glut.h>
+#include <Windows.h>
+#include <tchar.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 #else
-	#include <GL/gl.h>
-	#include <GL/glu.h>
-	#include <GL/glut.h>
-	#include <unistd.h>
-	#include <sys/time.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <unistd.h>
+#include <sys/time.h>
 #endif
 
 
@@ -38,6 +38,12 @@
 #include "Messages.hpp"
 #include "HUD.hpp"
 #include "ObstacleManager.hpp"
+
+#include "RectanglePrism.h"
+#include "Cylinder.h"
+#include "TrianglePrism.h"
+#include "TrapezoidalPrism.h"
+#include "MyVehicle.h"
 
 void display();
 void reshape(int width, int height);
@@ -109,12 +115,11 @@ int main(int argc, char ** argv) {
 
 	vehicle = new MyVehicle();
 
-
 	// add test obstacles
-	ObstacleManager::get()->addObstacle(Obstacle(10,10, 1));
-	ObstacleManager::get()->addObstacle(Obstacle(10,-10, 1));
-	ObstacleManager::get()->addObstacle(Obstacle(-10,10, 1));
-	ObstacleManager::get()->addObstacle(Obstacle(-10,-10, 1));
+	ObstacleManager::get()->addObstacle(Obstacle(10, 10, 1));
+	ObstacleManager::get()->addObstacle(Obstacle(10, -10, 1));
+	ObstacleManager::get()->addObstacle(Obstacle(-10, 10, 1));
+	ObstacleManager::get()->addObstacle(Obstacle(-10, -10, 1));
 
 	// add test goal
 	GoalState g;
@@ -131,6 +136,7 @@ int main(int argc, char ** argv) {
 
 	return 0;
 }
+
 void drawGoals()
 {
 	for (int i = 0; i < goals.size(); ++i) {
@@ -152,6 +158,7 @@ void drawGoals()
 	}
 }
 
+
 void display() {
 	frameCounter++;
 	// -------------------------------------------------------------------------
@@ -163,7 +170,7 @@ void display() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if(Camera::get()->isPursuitMode() && vehicle != NULL) {
+	if (Camera::get()->isPursuitMode() && vehicle != NULL) {
 		double x = vehicle->getX(), y = vehicle->getY(), z = vehicle->getZ();
 		double dx = cos(vehicle->getRotation() * 3.141592765 / 180.0);
 		double dy = sin(vehicle->getRotation() * 3.141592765 / 180.0);
@@ -174,9 +181,9 @@ void display() {
 	Camera::get()->setLookAt();
 
 	Ground::draw();
-	
+
 	// draw other vehicles
-	for(std::map<int, Vehicle *>::iterator iter = otherVehicles.begin(); iter != otherVehicles.end(); ++iter) 
+	for (std::map<int, Vehicle *>::iterator iter = otherVehicles.begin(); iter != otherVehicles.end(); ++iter)
 		iter->second->draw();
 
 	// draw my vehicle
@@ -193,7 +200,6 @@ void display() {
 
 	// draw HUD
 	HUD::Draw();
-
 
 	glutSwapBuffers();
 };
@@ -223,7 +229,7 @@ double getTime()
 #if defined(WIN32)
 	LARGE_INTEGER freqli;
 	LARGE_INTEGER li;
-	if(QueryPerformanceCounter(&li) && QueryPerformanceFrequency(&freqli)) {
+	if (QueryPerformanceCounter(&li) && QueryPerformanceFrequency(&freqli)) {
 		return double(li.QuadPart) / double(freqli.QuadPart);
 	}
 	else {
@@ -267,7 +273,7 @@ void idle() {
 	steering = 0;
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_LEFT)) {
-		steering = Vehicle::MAX_LEFT_STEERING_DEGS * -1;   
+		steering = Vehicle::MAX_LEFT_STEERING_DEGS * -1;
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_RIGHT)) {
@@ -283,33 +289,35 @@ void idle() {
 	}
 
 	// attempt to do data communications every 4 frames if we've created a local vehicle
-	if(frameCounter % 4 == 0 && vehicle != NULL) {
+	if (frameCounter % 4 == 0 && vehicle != NULL) {
 
 		// if not connected, attempt to connect every 2 seconds
-		if(!RemoteDataManager::IsConnected()) {
-			if(frameCounter % 120 == 0) {
-		
+		if (!RemoteDataManager::IsConnected()) {
+			if (frameCounter % 120 == 0) {
+
 				// erase other vehicles
-				for(std::map<int, Vehicle*>::iterator iter = otherVehicles.begin(); iter  != otherVehicles.end(); ++iter) {
+				for (std::map<int, Vehicle*>::iterator iter = otherVehicles.begin(); iter != otherVehicles.end(); ++iter) {
 					delete iter->second;
 				}
 				otherVehicles.clear();
 
-				// uncomment this line to connect to the robotics server.
-				RemoteDataManager::Connect("www.robotics.unsw.edu.au","18081");
+				//uncomment this line to connect to the robotics server.
+				RemoteDataManager::Connect("www.robotics.unsw.edu.au", "18081");
 
 				// on connect, let's tell the server what we look like
 				if (RemoteDataManager::IsConnected()) {
 					ObstacleManager::get()->removeAll();
 
-					VehicleModel vm;
+					//dynamic cast vehicle into a pointer of MyVehicle and get localmd to pass in vm
+					VehicleModel vm = ((MyVehicle*)vehicle)->getLocalmd();
+
 					vm.remoteID = 0;
 
 					//
 					// student code goes here
 					//
 
-					RemoteDataManager::Write(GetVehicleModelStr(vm));
+					RemoteDataManager::Write(GetVehicleModelStr(vm));//upload vm
 				}
 			}
 		}
@@ -329,87 +337,87 @@ void idle() {
 		// if we're still connected, receive and handle response messages from the server
 		if (RemoteDataManager::IsConnected()) {
 			std::vector<RemoteMessage> msgs = RemoteDataManager::Read();
-			for(unsigned int i = 0; i < msgs.size(); i++ ) {
+			for (unsigned int i = 0; i < msgs.size(); i++) {
 
 				RemoteMessage msg = msgs[i];
 				//cout << msg.payload << endl;
 
-				switch(msg.type) {
+				switch (msg.type) {
 					// new models
-					case 'M':
-						{
-							std::vector<VehicleModel> models = GetVehicleModels(msg.payload);
-							for(unsigned int i = 0; i < models.size(); i++) {
-								VehicleModel vm = models[i];
-								
-								// uncomment the line below to create remote vehicles
-							 otherVehicles[vm.remoteID] = new MyVehicle();
+				case 'M':
+				{
+					std::vector<VehicleModel> models = GetVehicleModels(msg.payload);
+					for (unsigned int i = 0; i < models.size(); i++) {
+						VehicleModel vm = models[i];
 
-								//
-								// more student code goes here
-								//
-							}
-							break;
+						// uncomment the line below to create remote vehicles
+						otherVehicles[vm.remoteID] = new MyVehicle(vm);
+
+						//
+						// more student code goes here
+						//
+					}
+					break;
+				}
+
+				// vehicle states
+				case 'S':
+				{
+					std::vector<VehicleState> states = GetVehicleStates(msg.payload);
+					for (unsigned int i = 0; i < states.size(); i++) {
+						VehicleState vs = states[i];
+
+						std::map<int, Vehicle*>::iterator iter = otherVehicles.find(vs.remoteID);
+						if (iter != otherVehicles.end()) {
+							Vehicle * veh = iter->second;
+							remoteDriver(veh, vs.x, vs.z, vs.rotation, vs.speed, vs.steering);
 						}
+					}
+					break;
+				}
 
-					// vehicle states
-					case 'S': 
-						{
-							std::vector<VehicleState> states = GetVehicleStates(msg.payload);
-							for(unsigned int i = 0; i < states.size(); i++) {
-								VehicleState vs = states[i];
+				// goal state
+				case 'G':
+				{
+					goals = GetGoals(msg.payload);
+					break;
+				}
 
-								std::map<int, Vehicle*>::iterator iter = otherVehicles.find(vs.remoteID);
-								if(iter != otherVehicles.end()) {
-									Vehicle * veh = iter->second;
-									remoteDriver(veh, vs.x, vs.z, vs.rotation, vs.speed, vs.steering);
-								}
-							}
-							break;
+				// obstacle state
+				case 'O':
+				{
+					std::vector<ObstacleState> obs = GetObstacles(msg.payload);
+					for (unsigned int i = 0; i < obs.size(); i++) {
+						Obstacle o(obs[i].x, obs[i].z, obs[i].radius);
+						ObstacleManager::get()->addObstacle(o);
+					}
+					break;
+				}
+
+				// disconnect list
+				case 'D':
+				{
+					std::vector<int> disconnectedIDs = GetVehicleDisconnects(msg.payload);
+					for (unsigned int i = 0; i < disconnectedIDs.size(); i++) {
+						int id = disconnectedIDs[i];
+						std::map<int, Vehicle*>::iterator iter = otherVehicles.find(id);
+						if (iter != otherVehicles.end()) {
+							delete iter->second;
+							otherVehicles.erase(iter);
 						}
+					}
+					break;
+				}
 
-					// goal state
-					case 'G':
-						{
-							goals = GetGoals(msg.payload);
-							break;
-						}
-
-					// obstacle state
-					case 'O':
-						{
-							std::vector<ObstacleState> obs = GetObstacles(msg.payload);
-							for(unsigned int i = 0; i < obs.size(); i++) {
-								Obstacle o(obs[i].x, obs[i].z, obs[i].radius);
-								ObstacleManager::get()->addObstacle(o);
-							}
-							break;
-						}
-
-					// disconnect list
-					case 'D':
-						{
-							std::vector<int> disconnectedIDs = GetVehicleDisconnects(msg.payload);
-							for(unsigned int i = 0; i < disconnectedIDs.size(); i++) {
-								int id = disconnectedIDs[i];
-								std::map<int, Vehicle*>::iterator iter = otherVehicles.find(id);
-								if(iter != otherVehicles.end()) {
-									delete iter->second;
-									otherVehicles.erase(iter);
-								}
-							}
-							break;
-						}
-
-					// error message
-					case 'E':
-						{
-							cerr << "Server error: " << msg.payload << endl;
-							break;
-						}
+				// error message
+				case 'E':
+				{
+					cerr << "Server error: " << msg.payload << endl;
+					break;
+				}
 
 				}
-			} 
+			}
 		}
 	}
 
@@ -425,7 +433,7 @@ void idle() {
 	if (vehicle != NULL) {
 		vehicle->update(speed, steering, elapsedTime);
 	}
-	for(std::map<int, Vehicle*>::iterator iter = otherVehicles.begin(); iter  != otherVehicles.end(); ++iter) {
+	for (std::map<int, Vehicle*>::iterator iter = otherVehicles.begin(); iter != otherVehicles.end(); ++iter) {
 		iter->second->update(elapsedTime);
 	}
 
@@ -449,7 +457,7 @@ void keydown(unsigned char key, int x, int y) {
 	switch (key) {
 	case 27: // ESC key
 		exit(0);
-		break;      
+		break;
 	case '0':
 		Camera::get()->jumpToOrigin();
 		break;
@@ -470,8 +478,8 @@ void special_keydown(int keycode, int x, int y) {
 
 };
 
-void special_keyup(int keycode, int x, int y) {  
-	KeyManager::get()->specialKeyReleased(keycode);  
+void special_keyup(int keycode, int x, int y) {
+	KeyManager::get()->specialKeyReleased(keycode);
 };
 
 void mouse(int button, int state, int x, int y) {
