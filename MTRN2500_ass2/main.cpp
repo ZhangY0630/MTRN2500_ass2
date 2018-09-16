@@ -33,7 +33,7 @@
 
 #include "Shape.hpp"
 #include "Vehicle.hpp"
-
+#include "MyVehicle.h"
 #include "RemoteDataManager.hpp"
 #include "Messages.hpp"
 #include "HUD.hpp"
